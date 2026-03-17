@@ -1,1 +1,6 @@
+node_modules/
+dist/
+coverage/
+.idea/
+
 node_modules/\ndist/\n.env
