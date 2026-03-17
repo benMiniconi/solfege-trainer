@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -29,6 +30,8 @@ import {
   ChevronDown,
   ChevronUp,
   Music,
+  FileMusic,
+  BookOpen,
 } from 'lucide-react';
 import { PerplexityAttribution } from '@/components/PerplexityAttribution';
 
@@ -64,6 +67,8 @@ const INITIAL_STATS: SessionStats = {
 };
 
 export default function Home() {
+  const [, setLocation] = useLocation();
+
   // Game settings
   const [mode, setMode] = useState<GameMode>('single');
   const [clef, setClef] = useState<ClefType>('treble');
@@ -320,6 +325,31 @@ export default function Home() {
         {/* Idle state */}
         {gameState === 'idle' && (
           <div className="flex flex-col items-center gap-6 pt-4">
+            {/* Mode navigation */}
+            <div className="w-full grid grid-cols-2 gap-3 mb-2">
+              <Card className="p-4 border-primary bg-primary/5">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <BookOpen className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">Lecture de notes</span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Quiz interactif — notes et accords aléatoires
+                </p>
+              </Card>
+              <Card
+                className="p-4 cursor-pointer hover:border-primary/50 transition-colors"
+                onClick={() => setLocation('/practice')}
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  <FileMusic className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Pratique de partition</span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Importez un MIDI et jouez avec le mode attente
+                </p>
+              </Card>
+            </div>
+
             <div className="w-full space-y-5">
               <div>
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">
