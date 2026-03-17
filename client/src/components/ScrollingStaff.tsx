@@ -170,6 +170,17 @@ export function ScrollingStaff({
           </g>
         )}
 
+        {/* Pulse animation for current note */}
+        <defs>
+          <style>{`
+            @keyframes note-pulse {
+              0%, 100% { opacity: 0.15; r: 14; }
+              50% { opacity: 0.35; r: 18; }
+            }
+            .note-pulse { animation: note-pulse 1.2s ease-in-out infinite; }
+          `}</style>
+        </defs>
+
         {/* Cursor line */}
         {isPlaying && (
           <line
@@ -295,6 +306,17 @@ export function ScrollingStaff({
                       />
                     ))}
 
+                    {/* Pulse indicator for current note */}
+                    {eventIdx === currentEventIndex && !matchedNotes.has(note.midi) && isPlaying && (
+                      <circle
+                        cx={x + xOffset}
+                        cy={y}
+                        r={14}
+                        fill="hsl(var(--primary))"
+                        className="note-pulse"
+                      />
+                    )}
+
                     {/* Note head */}
                     <ellipse
                       cx={x + xOffset}
@@ -318,16 +340,19 @@ export function ScrollingStaff({
                       </text>
                     )}
 
-                    {/* Solfège label */}
-                    {showLabels && eventIdx === currentEventIndex && (
+                    {/* Solfège label - show on current and next few events to guide the player */}
+                    {showLabels && eventIdx >= currentEventIndex && eventIdx <= currentEventIndex + 3 && (
                       <text
                         x={x + xOffset}
                         y={y > STAFF_TOP + STAFF_SPAN / 2 ? y - 12 : y + 16}
-                        fontSize="9"
-                        fill="hsl(var(--primary))"
+                        fontSize={eventIdx === currentEventIndex ? '10' : '8'}
+                        fill={eventIdx === currentEventIndex
+                          ? (matchedNotes.has(note.midi) ? '#22c55e' : 'hsl(var(--primary))')
+                          : 'hsl(var(--muted-foreground))'}
                         textAnchor="middle"
-                        fontWeight="600"
+                        fontWeight={eventIdx === currentEventIndex ? '700' : '500'}
                         fontFamily="var(--font-sans)"
+                        opacity={eventIdx === currentEventIndex ? 1 : 0.6}
                       >
                         {toSolfege(noteName, accidental)}
                       </text>
