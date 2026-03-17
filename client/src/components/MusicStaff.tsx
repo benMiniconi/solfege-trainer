@@ -25,9 +25,9 @@ export function MusicStaff({ notes, clef, showLabels = false, animate = true }: 
   const noteX = width / 2;
 
   // Treble clef: lines are E4, G4, B4, D5, F5 (positions 2, 4, 6, 8, 10)
-  // Bass clef: lines are G2, B2, D3, F3, A3 (positions -12, -10, -8, -6, -4)
+  // Bass clef: lines are G2, B2, D3, F3, A3 (positions -10, -8, -6, -4, -2)
   const trebleLinePositions = [2, 4, 6, 8, 10]; // E4, G4, B4, D5, F5
-  const bassLinePositions = [-12, -10, -8, -6, -4]; // G2, B2, D3, F3, A3
+  const bassLinePositions = [-10, -8, -6, -4, -2]; // G2, B2, D3, F3, A3
 
   const linePositions = clef === 'treble' ? trebleLinePositions : bassLinePositions;
 
@@ -60,7 +60,7 @@ export function MusicStaff({ notes, clef, showLabels = false, animate = true }: 
     if (clef === 'treble' && pos <= 0 && pos % 2 === 0) {
       if (!ledgers.includes(pos)) ledgers.push(pos);
     }
-    if (clef === 'bass' && pos >= -2 && pos % 2 === 0) {
+    if (clef === 'bass' && pos >= 0 && pos % 2 === 0) {
       if (!ledgers.includes(pos)) ledgers.push(pos);
     }
 

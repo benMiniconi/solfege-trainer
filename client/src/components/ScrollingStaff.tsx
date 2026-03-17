@@ -25,7 +25,7 @@ const LOOK_AHEAD = 10; // events ahead to show
 const LOOK_BEHIND = 3; // events behind to show
 
 const trebleLinePositions = [2, 4, 6, 8, 10];
-const bassLinePositions = [-12, -10, -8, -6, -4];
+const bassLinePositions = [-10, -8, -6, -4, -2];
 
 export function ScrollingStaff({
   events,
@@ -63,7 +63,7 @@ export function ScrollingStaff({
     if (clef === 'treble' && pos <= 0 && pos % 2 === 0) {
       if (!ledgers.includes(pos)) ledgers.push(pos);
     }
-    if (clef === 'bass' && pos >= -2 && pos % 2 === 0) {
+    if (clef === 'bass' && pos >= 0 && pos % 2 === 0) {
       if (!ledgers.includes(pos)) ledgers.push(pos);
     }
     return ledgers;
@@ -108,7 +108,7 @@ export function ScrollingStaff({
     if (actualClef === 'treble' && pos <= 0 && pos % 2 === 0) {
       if (!ledgers.includes(pos)) ledgers.push(pos);
     }
-    if (actualClef === 'bass' && pos >= -2 && pos % 2 === 0) {
+    if (actualClef === 'bass' && pos >= 0 && pos % 2 === 0) {
       if (!ledgers.includes(pos)) ledgers.push(pos);
     }
     return ledgers;
