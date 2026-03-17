@@ -26,7 +26,7 @@ export function useMidi(onNoteOn?: (note: number, velocity: number) => void, onN
 
   const activeNotesRef = useRef(new Set<number>());
 
-  const handleMidiMessage = useCallback((event: WebMidi.MIDIMessageEvent) => {
+  const handleMidiMessage = useCallback((event: MIDIMessageEvent) => {
     const [status, note, velocity] = event.data as unknown as number[];
     const command = status & 0xf0;
 
@@ -53,7 +53,9 @@ export function useMidi(onNoteOn?: (note: number, velocity: number) => void, onN
   useEffect(() => {
     if (!state.isSupported) return;
 
-    let midiAccess: WebMidi.MIDIAccess | null = null;
+    if (!('requestMIDIAccess' in navigator) || typeof navigator.requestMIDIAccess !== 'function') return;
+
+    let midiAccess: MIDIAccess | null = null;
 
     const setupMidi = async () => {
       try {
