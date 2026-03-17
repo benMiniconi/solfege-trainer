@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { MusicStaff } from '@/components/MusicStaff';
 import { PianoKeyboard } from '@/components/PianoKeyboard';
 import { MidiStatus } from '@/components/MidiStatus';
@@ -34,6 +35,7 @@ import { PerplexityAttribution } from '@/components/PerplexityAttribution';
 
 type GameMode = 'single' | 'chord2' | 'chord3';
 type GameState = 'idle' | 'playing' | 'feedback' | 'finished';
+type StaffLabelsMode = 'answerOnly' | 'always' | 'never';
 
 interface NoteData {
   note: string;
@@ -71,6 +73,8 @@ export default function Home() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const [roundCount, setRoundCount] = useState(20);
+  const [staffLabelsMode, setStaffLabelsMode] = useState<StaffLabelsMode>('answerOnly');
+  const [staffAnimate, setStaffAnimate] = useState(true);
 
   // Game state
   const [gameState, setGameState] = useState<GameState>('idle');
@@ -296,6 +300,8 @@ export default function Home() {
   }
 
   const accuracyPercent = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
+  const staffShowLabels =
+    staffLabelsMode === 'always' ? true : staffLabelsMode === 'never' ? false : showAnswer;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -311,7 +317,62 @@ export default function Home() {
               <p className="text-xs text-muted-foreground">Lecture de notes & accords</p>
             </div>
           </div>
-          <MidiStatus midi={midi} />
+          <div className="flex items-center gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-2.5 text-xs"
+                  data-testid="header-partition-button"
+                >
+                  Partition
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-80" data-testid="header-partition-menu">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <span>Partition</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm">Afficher les noms sur la portée</Label>
+                    <Tabs
+                      value={staffLabelsMode}
+                      onValueChange={(v) => setStaffLabelsMode(v as StaffLabelsMode)}
+                    >
+                      <TabsList className="w-full" data-testid="header-staff-labels-mode">
+                        <TabsTrigger value="answerOnly" className="flex-1" data-testid="header-staff-labels-answer-only">
+                          Correction
+                        </TabsTrigger>
+                        <TabsTrigger value="always" className="flex-1" data-testid="header-staff-labels-always">
+                          Toujours
+                        </TabsTrigger>
+                        <TabsTrigger value="never" className="flex-1" data-testid="header-staff-labels-never">
+                          Jamais
+                        </TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                    <p className="text-xs text-muted-foreground">
+                      “Correction” affiche les noms seulement après une erreur.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="header-staff-animate" className="text-sm">Animations</Label>
+                    <Switch
+                      id="header-staff-animate"
+                      checked={staffAnimate}
+                      onCheckedChange={setStaffAnimate}
+                      data-testid="header-toggle-staff-animate"
+                    />
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            <MidiStatus midi={midi} />
+          </div>
         </div>
       </header>
 
@@ -403,6 +464,43 @@ export default function Home() {
                       ))}
                     </div>
                   </div>
+
+                  {/* Partition menu */}
+                  <div className="pt-2 border-t border-border/60 space-y-3" data-testid="staff-settings">
+                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Partition
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-sm">Afficher les noms sur la portée</Label>
+                      <Tabs
+                        value={staffLabelsMode}
+                        onValueChange={(v) => setStaffLabelsMode(v as StaffLabelsMode)}
+                      >
+                        <TabsList className="w-full" data-testid="staff-labels-mode">
+                          <TabsTrigger value="answerOnly" className="flex-1" data-testid="staff-labels-answer-only">
+                            Correction
+                          </TabsTrigger>
+                          <TabsTrigger value="always" className="flex-1" data-testid="staff-labels-always">
+                            Toujours
+                          </TabsTrigger>
+                          <TabsTrigger value="never" className="flex-1" data-testid="staff-labels-never">
+                            Jamais
+                          </TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="staff-animate" className="text-sm">Animations</Label>
+                      <Switch
+                        id="staff-animate"
+                        checked={staffAnimate}
+                        onCheckedChange={setStaffAnimate}
+                        data-testid="toggle-staff-animate"
+                      />
+                    </div>
+                  </div>
                 </Card>
               )}
             </div>
@@ -468,8 +566,8 @@ export default function Home() {
               <MusicStaff
                 notes={currentNotes}
                 clef={clef}
-                showLabels={showAnswer}
-                animate={true}
+                showLabels={staffShowLabels}
+                animate={staffAnimate}
               />
             </Card>
 
